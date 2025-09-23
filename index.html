@@ -1,184 +1,205 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>TTC • Modul Data</title>
-<script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Teacher Tech Championship • Beranda</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-50 text-slate-800">
-<div class="max-w-6xl mx-auto p-6">
-  <header class="mb-6">
-    <h1 class="text-2xl md:text-3xl font-bold">Teacher Tech Championship — Modul Data</h1>
-    <p class="text-slate-600">Masukkan sekolah, aspek & bobot (100%), serta nama juri. Setelah disimpan, Anda akan kembali ke beranda.</p>
-  </header>
+  <!-- Hero -->
+  <div class="relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-indigo-600/20 via-purple-500/20 to-pink-500/20"></div>
+    <header class="relative max-w-6xl mx-auto px-6 py-6 flex items-center justify-between">
+      <h1 class="text-xl md:text-2xl font-bold text-slate-900">Teacher Tech Championship</h1>
+      <a href="https://github.com" class="hidden md:inline text-sm text-slate-600 hover:text-slate-800">GitHub Pages</a>
+    </header>
+    <section class="relative max-w-6xl mx-auto px-6 pb-6">
+      <div class="rounded-2xl bg-white/80 backdrop-blur border border-slate-200 p-6 md:p-8 shadow-sm">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+          <div>
+            <div class="inline-flex items-center gap-2 rounded-full bg-indigo-50 text-indigo-700 px-3 py-1 text-xs font-medium mb-3" id="pillStatus">
+              <span class="w-2 h-2 rounded-full bg-rose-500" id="dotStatus"></span>
+              <span id="labelStatus">Konfigurasi belum dibuat</span>
+            </div>
+            <h2 class="text-2xl md:text-3xl font-bold">Panel Beranda</h2>
+            <p class="text-slate-600 mt-2">Kelola data lomba, lakukan penjurian, dan lihat hasil rekap per wilayah — semuanya dari satu tempat.</p>
 
-  <div id="toast" class="hidden rounded-lg px-4 py-3 mb-4 text-sm"></div>
+            <div class="mt-5 flex flex-wrap gap-3">
+              <a href="data.html" class="inline-flex items-center gap-2 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2">
+                <!-- icon database -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="1.5" d="M4 6.75C4 5.231 7.134 4 11 4s7 1.231 7 2.75-3.134 2.75-7 2.75-7-1.231-7-2.75zm14 0V18c0 1.52-3.134 2.75-7 2.75S4 19.52 4 18V6.75M21 10.5c0 1.52-3.134 2.75-7 2.75S7 12.02 7 10.5"/></svg>
+                Modul Data
+              </a>
+              <a href="juri.html" class="inline-flex items-center gap-2 rounded-md border border-slate-300 hover:bg-slate-50 px-4 py-2">
+                <!-- icon clipboard-check -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="1.5" d="M9 6h6M9 3h6a3 3 0 013 3v12a3 3 0 01-3 3H9m0-18a3 3 0 00-3 3v12a3 3 0 003 3m0-7l2 2 4-4"/></svg>
+                Modul Juri
+              </a>
+              <a href="hasil.html" class="inline-flex items-center gap-2 rounded-md border border-slate-300 hover:bg-slate-50 px-4 py-2">
+                <!-- icon trophy -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="1.5" d="M8 21h8m-4-4v4m8-15h-3V4a1 1 0 00-1-1H6a1 1 0 00-1 1v2H2v2a5 5 0 005 5h10a5 5 0 005-5V6z"/></svg>
+                Modul Hasil
+              </a>
+              <button id="btnResetAll" class="inline-flex items-center gap-2 rounded-md border border-rose-300 text-rose-700 hover:bg-rose-50 px-4 py-2">
+                <!-- icon trash -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m-7 0h8l-1-2H10l-1 2z"/></svg>
+                Reset Semua Data
+              </button>
+            </div>
+          </div>
 
-  <!-- Sekolah -->
-  <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 mb-6">
-    <h2 class="text-lg font-semibold mb-4">A. Daftar Sekolah & Wilayah</h2>
-    <div class="flex items-end gap-3 mb-3">
-      <label class="block">
-        <span class="text-sm">Jumlah Sekolah</span>
-        <input id="nSek" type="number" min="1" value="4" class="mt-1 w-40 rounded-md border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" />
-      </label>
-      <button id="btnSek" class="rounded-md bg-slate-800 hover:bg-slate-900 text-white px-4 py-2">Buat Form</button>
+          <!-- Status ringkas -->
+          <div class="min-w-[280px] grow md:max-w-sm">
+            <div class="grid grid-cols-2 gap-3">
+              <div class="rounded-xl border border-slate-200 bg-white p-4">
+                <div class="text-xs text-slate-500">Sekolah</div>
+                <div class="mt-1 text-2xl font-bold" id="statSekolah">—</div>
+              </div>
+              <div class="rounded-xl border border-slate-200 bg-white p-4">
+                <div class="text-xs text-slate-500">Aspek</div>
+                <div class="mt-1 text-2xl font-bold" id="statAspek">—</div>
+              </div>
+              <div class="rounded-xl border border-slate-200 bg-white p-4">
+                <div class="text-xs text-slate-500">Total Juri</div>
+                <div class="mt-1 text-2xl font-bold" id="statJuri">—</div>
+              </div>
+              <div class="rounded-xl border border-slate-200 bg-white p-4">
+                <div class="text-xs text-slate-500">Juri Mengisi</div>
+                <div class="mt-1 text-2xl font-bold" id="statJuriIsi">0</div>
+              </div>
+            </div>
+
+            <!-- Progress -->
+            <div class="mt-4">
+              <div class="flex items-center justify-between text-xs text-slate-600 mb-1">
+                <span>Progress Penjurian (berdasarkan jumlah juri)</span>
+                <span id="labelProgress">0%</span>
+              </div>
+              <div class="h-2 w-full rounded-full bg-slate-200 overflow-hidden">
+                <div id="barProgress" class="h-full bg-indigo-600 rounded-full" style="width:0%"></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Kartu modul -->
+  <main class="max-w-6xl mx-auto px-6 py-10">
+    <div class="grid md:grid-cols-3 gap-6">
+      <!-- Data -->
+      <a href="data.html" class="group rounded-2xl bg-white border border-slate-200 p-6 shadow-sm hover:shadow-md transition">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold">Modul Data</h3>
+          <span class="rounded-full bg-indigo-50 text-indigo-700 text-xs px-2 py-1 border border-indigo-100">Admin</span>
+        </div>
+        <p class="text-slate-600 mt-2">Masukkan sekolah & wilayah, tentukan aspek dan bobot (total 100%), serta daftar nama juri.</p>
+        <div class="mt-4 flex items-center gap-2 text-indigo-700 group-hover:gap-3">
+          <span class="text-sm font-medium">Buka</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.5" d="M9 5l7 7-7 7"/></svg>
+        </div>
+      </a>
+
+      <!-- Juri -->
+      <a href="juri.html" class="group rounded-2xl bg-white border border-slate-200 p-6 shadow-sm hover:shadow-md transition">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold">Modul Juri</h3>
+          <span class="rounded-full bg-emerald-50 text-emerald-700 text-xs px-2 py-1 border border-emerald-100">Penilaian</span>
+        </div>
+        <p class="text-slate-600 mt-2">Pilih nama juri dari dropdown, isi nilai tiap aspek untuk seluruh sekolah. Otomatis tersimpan & ada rekap per juri.</p>
+        <div class="mt-4 flex items-center gap-2 text-emerald-700 group-hover:gap-3">
+          <span class="text-sm font-medium">Buka</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.5" d="M9 5l7 7-7 7"/></svg>
+        </div>
+      </a>
+
+      <!-- Hasil -->
+      <a href="hasil.html" class="group rounded-2xl bg-white border border-slate-200 p-6 shadow-sm hover:shadow-md transition">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold">Modul Hasil</h3>
+          <span class="rounded-full bg-amber-50 text-amber-700 text-xs px-2 py-1 border border-amber-100">Rekap</span>
+        </div>
+        <p class="text-slate-600 mt-2">Gabungkan nilai seluruh juri, lihat peringkat tiap wilayah (rata-rata), SD & ekspor CSV.</p>
+        <div class="mt-4 flex items-center gap-2 text-amber-700 group-hover:gap-3">
+          <span class="text-sm font-medium">Buka</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.5" d="M9 5l7 7-7 7"/></svg>
+        </div>
+      </a>
     </div>
-    <div id="wrapSek" class="grid md:grid-cols-2 gap-3"></div>
-  </section>
 
-  <!-- Aspek -->
-  <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 mb-6">
-    <h2 class="text-lg font-semibold mb-4">B. Aspek Penilaian & Bobot</h2>
-    <div class="flex items-end gap-3 mb-3">
-      <label class="block">
-        <span class="text-sm">Jumlah Aspek</span>
-        <input id="nAsp" type="number" min="1" value="4" class="mt-1 w-40 rounded-md border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" />
-      </label>
-      <button id="btnAsp" class="rounded-md bg-slate-800 hover:bg-slate-900 text-white px-4 py-2">Buat Form</button>
+    <!-- Tips -->
+    <div class="mt-10 rounded-2xl bg-white border border-slate-200 p-6">
+      <h4 class="font-semibold">Tips cepat</h4>
+      <ul class="list-disc pl-5 text-slate-600 mt-2 space-y-1 text-sm">
+        <li>Mulai dari <strong>Modul Data</strong> untuk membuat konfigurasi.</li>
+        <li>Di <strong>Modul Juri</strong>, nilai otomatis tersimpan di perangkat (LocalStorage).</li>
+        <li>Di <strong>Modul Hasil</strong>, klik “Hitung &amp; Tampilkan” untuk melihat peringkat per wilayah.</li>
+      </ul>
     </div>
+  </main>
 
-    <div class="overflow-x-auto">
-      <table class="min-w-full text-sm border border-slate-200 rounded-lg overflow-hidden">
-        <thead class="bg-slate-50">
-          <tr><th class="px-3 py-2 text-left">#</th><th class="px-3 py-2 text-left">Nama Aspek</th><th class="px-3 py-2 text-left">Bobot (%)</th></tr>
-        </thead>
-        <tbody id="tbodyAsp" class="[&_tr:nth-child(even)]:bg-slate-50"></tbody>
-        <tfoot class="bg-slate-100">
-          <tr>
-            <td class="px-3 py-2 font-medium" colspan="2">Total Bobot</td>
-            <td class="px-3 py-2 font-semibold">
-              <span id="sumBobot">0</span>% <span id="warnBobot" class="ml-2 text-xs font-medium"></span>
-            </td>
-          </tr>
-        </tfoot>
-      </table>
-    </div>
-  </section>
+  <footer class="max-w-6xl mx-auto px-6 py-10 text-xs text-slate-500">
+    © Teacher Tech Championship · Aplikasi penjurian sederhana (client-side).
+  </footer>
 
-  <!-- Juri -->
-  <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 mb-6">
-    <h2 class="text-lg font-semibold mb-4">C. Nama Para Juri</h2>
-    <div class="flex items-end gap-3 mb-3">
-      <label class="block">
-        <span class="text-sm">Jumlah Juri</span>
-        <input id="nJuri" type="number" min="1" value="3" class="mt-1 w-40 rounded-md border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" />
-      </label>
-      <button id="btnJuri" class="rounded-md bg-slate-800 hover:bg-slate-900 text-white px-4 py-2">Buat Form</button>
-    </div>
-    <div id="wrapJuri" class="grid md:grid-cols-3 gap-3"></div>
-  </section>
+  <script>
+    // ===== Helpers =====
+    const $ = (s) => document.querySelector(s);
 
-  <!-- Simpan -->
-  <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
-    <div class="flex flex-wrap gap-3">
-      <button id="btnSave" class="rounded-md bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2">Simpan Konfigurasi</button>
-      <button id="btnReset" class="rounded-md border border-slate-300 hover:bg-slate-50 px-4 py-2">Reset Semua Data</button>
-    </div>
-    <p class="text-xs text-slate-500 mt-2">Data disimpan lokal di browser (LocalStorage). Setelah disimpan, Anda akan diarahkan ke beranda.</p>
-  </section>
-</div>
+    function getConfig() {
+      try { return JSON.parse(localStorage.getItem('TTC_config') || 'null'); }
+      catch { return null; }
+    }
+    function getJudgesWithScores() {
+      const names = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.startsWith('TTC_scores_')) names.push(k.replace('TTC_scores_', ''));
+      }
+      return names;
+    }
+    function setStatus() {
+      const cfg = getConfig();
+      const judgeFilled = getJudgesWithScores();
 
-<script>
-const $=s=>document.querySelector(s);
-const toast=(msg,ok=true)=>{const t=$("#toast");t.classList.remove("hidden");t.className="rounded-lg px-4 py-3 mb-4 text-sm "+(ok?"bg-emerald-50 border border-emerald-200 text-emerald-900":"bg-rose-50 border border-rose-200 text-rose-900");t.textContent=msg;setTimeout(()=>t.classList.add("hidden"),2000);}
-const saveCfg=cfg=>localStorage.setItem("TTC_config",JSON.stringify(cfg));
-const getCfg = ()=>JSON.parse(localStorage.getItem("TTC_config")||"null");
+      // Status pill
+      const hasCfg = !!cfg;
+      $('#labelStatus').textContent = hasCfg ? 'Konfigurasi tersimpan' : 'Konfigurasi belum dibuat';
+      $('#dotStatus').className = 'w-2 h-2 rounded-full ' + (hasCfg ? 'bg-emerald-500' : 'bg-rose-500');
+      const pill = document.getElementById('pillStatus');
+      pill.className = 'inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium mb-3 ' + (hasCfg ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700');
 
-/* Sekolah */
-function renderSek(n){
-  const w=$("#wrapSek"); w.innerHTML="";
-  for(let i=0;i<n;i++){
-    const div=document.createElement("div");
-    div.className="grid grid-cols-2 gap-2 bg-slate-50 border border-slate-200 rounded-lg p-3";
-    div.innerHTML=`
-      <label class="text-sm">Nama Sekolah
-        <input id="sek${i}" class="mt-1 w-full rounded-md border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" placeholder="Sekolah ${i+1}">
-      </label>
-      <label class="text-sm">Wilayah
-        <input id="wil${i}" class="mt-1 w-full rounded-md border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" placeholder="Wilayah">
-      </label>`;
-    w.appendChild(div);
-  }
-}
+      // Stats
+      const nSek = cfg?.sekolahs?.length ?? 0;
+      const nAsp = cfg?.aspek?.length ?? 0;
+      const nJuri = cfg?.judges?.length ?? 0;
 
-/* Aspek */
-function renderAsp(n){
-  const tb=$("#tbodyAsp"); tb.innerHTML="";
-  for(let i=0;i<n;i++){
-    const tr=document.createElement("tr");
-    tr.innerHTML=`
-      <td class="px-3 py-2">${i+1}</td>
-      <td class="px-3 py-2"><input id="asp${i}" class="w-full rounded-md border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" placeholder="Aspek ${i+1}"></td>
-      <td class="px-3 py-2"><input id="bob${i}" type="number" min="0" max="100" step="1" class="w-28 rounded-md border-slate-300 focus:border-indigo-500 focus:ring-indigo-500"></td>`;
-    tb.appendChild(tr);
-  }
-  tb.querySelectorAll("input[type=number]").forEach(inp=>inp.addEventListener("input",sumBobot));
-  sumBobot();
-}
-function sumBobot(){
-  const n=parseInt($("#nAsp").value||"0",10); let s=0;
-  for(let i=0;i<n;i++){ s+= parseFloat($("#bob"+i)?.value||"0")||0; }
-  $("#sumBobot").textContent=s;
-  const w=$("#warnBobot"); w.textContent=(s===100?"✓ valid":"Total harus 100%"); w.className="ml-2 text-xs font-medium "+(s===100?"text-emerald-700":"text-rose-700");
-}
+      $('#statSekolah').textContent = nSek || '—';
+      $('#statAspek').textContent   = nAsp || '—';
+      $('#statJuri').textContent    = nJuri || '—';
+      $('#statJuriIsi').textContent = judgeFilled.length;
 
-/* Juri */
-function renderJuri(n){
-  const w=$("#wrapJuri"); w.innerHTML="";
-  for(let i=0;i<n;i++){
-    const div=document.createElement("div");
-    div.className="bg-slate-50 border border-slate-200 rounded-lg p-3";
-    div.innerHTML=`<label class="text-sm">Nama Juri ${i+1}
-      <input id="juri${i}" class="mt-1 w-full rounded-md border-slate-300 focus:border-indigo-500 focus:ring-indigo-500" placeholder="mis: Rina Andini">
-    </label>`;
-    w.appendChild(div);
-  }
-}
+      // Progress (berdasarkan jumlah juri yang sudah mulai menilai)
+      const pct = nJuri ? Math.round((judgeFilled.length / nJuri) * 100) : 0;
+      $('#labelProgress').textContent = pct + '%';
+      $('#barProgress').style.width = pct + '%';
+    }
 
-/* Buttons */
-$("#btnSek").onclick=()=>renderSek(parseInt($("#nSek").value||"0",10));
-$("#btnAsp").onclick=()=>renderAsp(parseInt($("#nAsp").value||"0",10));
-$("#btnJuri").onclick=()=>renderJuri(parseInt($("#nJuri").value||"0",10));
+    function resetAll() {
+      if (!confirm('Hapus SEMUA data (konfigurasi + seluruh nilai juri)?')) return;
+      const keys = Object.keys(localStorage);
+      keys.forEach(k => { if (k.startsWith('TTC_')) localStorage.removeItem(k); });
+      setStatus();
+      alert('Semua data dihapus. Silakan mulai dari Modul Data.');
+      location.href = 'data.html';
+    }
 
-/* Init (load jika ada) */
-(function(){
-  const cfg=getCfg();
-  if(cfg){
-    $("#nSek").value=cfg.sekolahs.length; renderSek(cfg.sekolahs.length);
-    cfg.sekolahs.forEach((s,i)=>{ $("#sek"+i).value=s.nama; $("#wil"+i).value=s.wilayah; });
-    $("#nAsp").value=cfg.aspek.length; renderAsp(cfg.aspek.length);
-    cfg.aspek.forEach((a,i)=>{ $("#asp"+i).value=a.nama; $("#bob"+i).value=a.bobot; });
-    $("#nJuri").value=cfg.judges.length; renderJuri(cfg.judges.length);
-    cfg.judges.forEach((j,i)=>{ $("#juri"+i).value=j; });
-    toast("Konfigurasi dimuat");
-  }else{
-    renderSek(parseInt($("#nSek").value,10));
-    renderAsp(parseInt($("#nAsp").value,10));
-    renderJuri(parseInt($("#nJuri").value,10));
-  }
-})();
-
-/* Simpan + redirect ke index.html */
-$("#btnSave").onclick=()=>{
-  const nSek=parseInt($("#nSek").value||"0",10), nAsp=parseInt($("#nAsp").value||"0",10), nJuri=parseInt($("#nJuri").value||"0",10);
-  const sekolahs=[]; for(let i=0;i<nSek;i++){ const nama=$("#sek"+i).value.trim(), wilayah=$("#wil"+i).value.trim(); if(!nama||!wilayah) return toast("Nama sekolah & wilayah wajib",false); sekolahs.push({nama,wilayah}); }
-  const aspek=[]; let sum=0; for(let i=0;i<nAsp;i++){ const nama=$("#asp"+i).value.trim(), bobot=parseFloat($("#bob"+i).value||"0"); if(!nama) return toast("Nama aspek wajib",false); if(isNaN(bobot)) return toast("Bobot harus angka",false); aspek.push({nama,bobot}); sum+=bobot; }
-  if(sum!==100) return toast("Total bobot harus 100%",false);
-  const judges=[]; for(let i=0;i<nJuri;i++){ const nm=$("#juri"+i).value.trim(); if(!nm) return toast("Nama juri tidak boleh kosong",false); judges.push(nm); }
-
-  saveCfg({sekolahs,aspek,judges});
-  toast("Konfigurasi tersimpan ✓");
-  setTimeout(()=>{ location.href="index.html"; }, 800); // otomatis kembali ke beranda
-};
-
-/* Reset semua data */
-$("#btnReset").onclick=()=>{
-  if(!confirm("Hapus semua data (config + nilai juri)?")) return;
-  Object.keys(localStorage).forEach(k=>{ if(k.startsWith("TTC_")) localStorage.removeItem(k); });
-  location.reload();
-};
-</script>
+    document.getElementById('btnResetAll').addEventListener('click', resetAll);
+    // Render on load
+    setStatus();
+  </script>
 </body>
 </html>
