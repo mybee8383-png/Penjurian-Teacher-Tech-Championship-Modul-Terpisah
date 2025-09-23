@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>TTC • Modul Juri</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 text-slate-800">
+<div class="max-w-6xl mx-auto p-6">
+  <header class="mb-6">
+    <h1 class="text-2xl md:text-3xl font-bold">Teacher Tech Championship — Modul Juri</h1>
+    <nav class="mt-2 text-sm">
+      <a href="data.html" class="text-indigo-600 hover:underline mr-4">← Modul Data</a>
+      <a href="hasil.html" class="text-indigo-600 hover:underline">→ Modul Hasil</a>
+    </nav>
+  </header>
+
+  <div id="toast" class="hidden rounded-lg px-4 py-3 mb-4 text-sm"></div>
+
+  <!-- Pilih Juri -->
+  <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 mb-6">
+    <h2 class="text-lg font-semibold mb-4">A. Pilih Nama Juri</h2>
+    <div class="flex items-end gap-3">
+      <label class="block">
+        <span class="text-sm">Nama Juri</span>
+        <select id="selectJuri" class="mt-1 w-64 rounded-md border-slate-300 focus:border-indigo-500 focus:ring-indigo-500"></select>
+      </label>
+      <button id="btnMulai" class="rounded-md bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2">Mulai Menilai</button>
+      <button id="btnHapusSaya" class="rounded-md border border-slate-300 hover:bg-slate-50 px-4 py-2">Hapus Nilai Juri Ini</button>
+    </div>
+    <p class="text-xs text-slate-500 mt-2">Nilai otomatis tersimpan saat Anda mengetik.</p>
+  </section>
+
+  <!-- Keterangan -->
+  <div class="bg-amber-50 border border-amber-200 text-amber-900 rounded-xl p-4 text-sm mb-6">
+    <strong>Keterangan Nilai:</strong> 100–90: Istimewa · 89–80: Baik Sekali · 79–70: Baik · 69–60: Cukup · 59–50: Kurang · &lt;49: Kurang Sekali
+  </div>
+
+  <!-- Form Penjurian -->
+  <section id="panelForm" class="hidden bg-white rounded-xl shadow-sm border border-slate-200 p-5 mb-6">
+    <h2 class="text-lg font-semibold mb-4">B. Kertas Penjurian</h2>
+    <div id="formPenjurian" class="overflow-x-auto"></div>
+  </section>
+
+  <!-- Rekap per Juri -->
+  <section id="panelRekap" class="hidden bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+    <h2 class="text-lg font-semibold mb-4">C. Rekap Nilai — <span id="labelJuri"></span></h2>
+    <div id="rekapTabel" class="overflow-x-auto"></div>
+  </section>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+const toast=(m,ok=true)=>{const t=$("#toast");t.classList.remove("hidden");t.className="rounded-lg px-4 py-3 mb-4 text-sm "+(ok?"bg-emerald-50 border border-emerald-200 text-emerald-900":"bg-rose-50 border border-rose-200 text-rose-900");t.textContent=m;setTimeout(()=>t.classList.add("hidden"),2200);}
+const cfg = JSON.parse(localStorage.getItem("TTC_config")||"null");
+if(!cfg){ alert("Konfigurasi belum dibuat. Buka modul data dulu."); location.href="data.html"; }
+
+/* Dropdown juri */
+(function(){
+  const sel=$("#selectJuri");
+  sel.innerHTML = cfg.judges.map(j=>`<option value="${j}">${j}</option>`).join("");
+})();
+
+const key = j=>`TTC_scores_${j}`;
+const kategori=v=>(v>=90?'Istimewa':v>=80?'Baik Sekali':v>=70?'Baik':v>=60?'Cukup':v>=50?'Kurang':'Kurang Sekali');
+
+$("#btnMulai").onclick=()=>{
+  const nama=$("#selectJuri").value;
+  $("#labelJuri").textContent = nama;
+
+  // tabel penjurian
+  const box=$("#formPenjurian"); box.innerHTML="";
+  const table=document.createElement("table");
+  table.className="min-w-full text-sm border border-slate-200 rounded-lg overflow-hidden";
+  table.innerHTML=`
+    <thead class="bg-slate-50"><tr>
+      <th class="px-3 py-2 text-left">Sekolah</th>
+      ${cfg.aspek.map(a=>`<th class="px-3 py-2 text-left">${a.nama} <span class="text-xs text-slate-500">(${a.bobot}%)</span></th>`).join("")}
+      <th class="px-3 py-2 text-left">Total</th>
+    </tr></thead>
+    <tbody id="tbodyJudge" class="[&_tr:nth-child(even)]:bg-slate-50"></tbody>`;
+  box.appendChild(table);
+
+  const body=table.querySelector("#tbodyJudge");
+  const draft = JSON.parse(localStorage.getItem(key(nama))||"null");
+
+  cfg.sekolahs.forEach((s,idxS)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td class="px-3 py-2 whitespace-nowrap">${s.nama} <span class="text-xs text-slate-500">(${s.wilayah})</span></td>`;
+    cfg.aspek.forEach((a,idxA)=>{
+      const td=document.createElement("td"); td.className="px-3 py-2";
+      const inp=document.createElement("input");
+      inp.type="number"; inp.min="0"; inp.max="100"; inp.step="1"; inp.id=`n_${idxS}_${idxA}`;
+      inp.className="w-24 rounded-md border-slate-300 focus:border-indigo-500 focus:ring-indigo-500";
+      const pred=document.createElement("div"); pred.id=`p_${idxS}_${idxA}`; pred.className="text-[11px] text-slate-500 mt-1";
+
+      if(draft){ const rec=draft.nilai.find(r=>r.sekolah===s.nama); if(rec && rec.nilai[a.nama]!=null){ inp.value=rec.nilai[a.nama]; pred.textContent=kategori(+inp.value); } }
+      inp.addEventListener("input",()=>{
+        let v=parseFloat(inp.value||"0"); if(v<0)v=0; if(v>100)v=100; inp.value=v;
+        pred.textContent=kategori(v); hitungTotalBaris(idxS); autoSave(nama);
+      });
+
+      td.appendChild(inp); td.appendChild(pred); tr.appendChild(td);
+    });
+    const tdTot=document.createElement("td"); tdTot.className="px-3 py-2 font-medium"; tdTot.id=`t_${idxS}`;
+    tdTot.textContent = draft ? (draft.nilai.find(r=>r.sekolah===s.nama)?.nilai.total||0).toFixed(2) : "0.00";
+    tr.appendChild(tdTot);
+    body.appendChild(tr);
+  });
+
+  $("#panelForm").classList.remove("hidden");
+  refreshRekap(nama);
+  $("#panelRekap").classList.remove("hidden");
+  toast(`Form untuk ${nama} siap`);
+};
+
+function hitungTotalBaris(idxS){
+  let tot=0; cfg.aspek.forEach((a,idxA)=>{ const v=parseFloat(($("#n_"+idxS+"_"+idxA)?.value)||"0"); tot+=v*(a.bobot/100); });
+  $("#t_"+idxS).textContent=tot.toFixed(2);
+}
+function autoSave(nama){
+  const data={namaJuri:nama, nilai:[]};
+  cfg.sekolahs.forEach((s,idxS)=>{
+    const pack={sekolah:s.nama, nilai:{}}; let total=0;
+    cfg.aspek.forEach((a,idxA)=>{ const v=parseFloat(($("#n_"+idxS+"_"+idxA)?.value)||"0"); pack.nilai[a.nama]=v; total+=v*(a.bobot/100); });
+    pack.nilai.total=parseFloat(total.toFixed(2)); data.nilai.push(pack);
+  });
+  localStorage.setItem(key(nama),JSON.stringify(data));
+  refreshRekap(nama);
+}
+function refreshRekap(nama){
+  const box=$("#rekapTabel"); box.innerHTML="";
+  const rec=JSON.parse(localStorage.getItem(key(nama))||"null"); if(!rec){ box.textContent="Belum ada nilai."; return; }
+  const tb=document.createElement("table"); tb.className="min-w-full text-sm border border-slate-200 rounded-lg overflow-hidden";
+  tb.innerHTML=`<thead class="bg-slate-50"><tr><th class="px-3 py-2 text-left">Sekolah</th><th class="px-3 py-2 text-left">Total</th></tr></thead><tbody class="[&_tr:nth-child(even)]:bg-slate-50"></tbody>`;
+  box.appendChild(tb);
+  const body=tb.querySelector("tbody");
+  rec.nilai.forEach(r=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td class="px-3 py-2">${r.sekolah}</td><td class="px-3 py-2">${(r.nilai.total||0).toFixed(2)}</td>`;
+    body.appendChild(tr);
+  });
+}
+$("#btnHapusSaya").onclick=()=>{
+  const nama=$("#selectJuri").value;
+  if(!confirm(`Hapus semua nilai milik ${nama}?`)) return;
+  localStorage.removeItem(key(nama));
+  $("#panelForm").classList.add("hidden");
+  $("#panelRekap").classList.add("hidden");
+  toast("Nilai juri dihapus");
+};
+</script>
+</body>
+</html>
