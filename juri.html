@@ -21,13 +21,15 @@
   <!-- Pilih Juri -->
   <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 mb-6">
     <h2 class="text-lg font-semibold mb-4">A. Pilih Nama Juri</h2>
-    <div class="flex items-end gap-3">
+    <div class="flex flex-wrap items-end gap-3">
       <label class="block">
         <span class="text-sm">Nama Juri</span>
         <select id="selectJuri" class="mt-1 w-64 rounded-md border-slate-300 focus:border-indigo-500 focus:ring-indigo-500"></select>
       </label>
       <button id="btnMulai" class="rounded-md bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2">Mulai Menilai</button>
       <button id="btnHapusSaya" class="rounded-md border border-slate-300 hover:bg-slate-50 px-4 py-2">Hapus Nilai Juri Ini</button>
+      <!-- ⬇️ Tombol reset semua data -->
+      <button id="btnResetAll" class="rounded-md border border-rose-300 text-rose-700 hover:bg-rose-50 px-4 py-2">Reset Semua Data</button>
     </div>
     <p class="text-xs text-slate-500 mt-2">Nilai otomatis tersimpan saat Anda mengetik.</p>
   </section>
@@ -149,6 +151,13 @@ $("#btnHapusSaya").onclick=()=>{
   $("#panelForm").classList.add("hidden");
   $("#panelRekap").classList.add("hidden");
   toast("Nilai juri dihapus");
+};
+
+/* ⬇️ Reset semua data (config + semua nilai juri) */
+$("#btnResetAll").onclick=()=>{
+  if(!confirm("Hapus SEMUA data (konfigurasi + seluruh nilai juri)?")) return;
+  Object.keys(localStorage).forEach(k=>{ if(k.startsWith("TTC_")) localStorage.removeItem(k); });
+  location.href = "data.html"; // setelah reset, arahkan ke modul data
 };
 </script>
 </body>
