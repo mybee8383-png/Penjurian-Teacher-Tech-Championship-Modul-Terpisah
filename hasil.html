@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>TTC • Modul Hasil</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 text-slate-800">
+<div class="max-w-6xl mx-auto p-6">
+  <header class="mb-6">
+    <h1 class="text-2xl md:text-3xl font-bold">Teacher Tech Championship — Modul Hasil</h1>
+    <nav class="mt-2 text-sm">
+      <a href="data.html" class="text-indigo-600 hover:underline mr-4">← Modul Data</a>
+      <a href="juri.html" class="text-indigo-600 hover:underline">← Modul Juri</a>
+    </nav>
+  </header>
+
+  <div id="toast" class="hidden rounded-lg px-4 py-3 mb-4 text-sm"></div>
+
+  <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+    <div class="flex gap-3 mb-4">
+      <button id="btnHitung" class="rounded-md bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2">Hitung & Tampilkan</button>
+      <button id="btnExport" class="rounded-md border border-slate-300 hover:bg-slate-50 px-4 py-2">Export CSV</button>
+    </div>
+    <div id="hasilWrap" class="space-y-6"></div>
+  </section>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+const toast=(m,ok=true)=>{const t=$("#toast");t.classList.remove("hidden");t.className="rounded-lg px-4 py-3 mb-4 text-sm "+(ok?"bg-emerald-50 border border-emerald-200 text-emerald-900":"bg-rose-50 border border-rose-200 text-rose-900");t.textContent=m;setTimeout(()=>t.classList.add("hidden"),2200);}
+const cfg = JSON.parse(localStorage.getItem("TTC_config")||"null");
+if(!cfg){ alert("Konfigurasi belum ada. Buka modul data dulu."); location.href="data.html"; }
+
+function ambilSemuaJuri(){
+  const arr=[]; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k.startsWith("TTC_scores_")) arr.push(k.slice("TTC_scores_".length)); }
+  return arr;
+}
+function kumpulkanRata2(){
+  const bySek = {}; // { "Sekolah A": {wilayah:"", nilai:[..]} }
+  cfg.sekolahs.forEach(s=> bySek[s.nama]={wilayah:s.wilayah, nilai:[]});
+  const juris = ambilSemuaJuri();
+  if(juris.length===0) return {bySek, juris};
+
+  juris.forEach(j=>{
+    const rec = JSON.parse(localStorage.getItem("TTC_scores_"+j)||"null");
+    if(!rec) return;
+    rec.nilai.forEach(r=>{
+      if(bySek[r.sekolah]){
+        const tot = typeof r.nilai.total==="number" ? r.nilai.total : 0;
+        bySek[r.sekolah].nilai.push(tot);
+      }
+    });
+  });
+
+  const hasil = []; // [{sekolah, wilayah, avg, sd, n}]
+  Object.entries(bySek).forEach(([nama,obj])=>{
+    const arr=obj.nilai;
+    if(arr.length){
+      const avg=arr.reduce((a,b)=>a+b,0)/arr.length;
+      const varc=arr.reduce((a,b)=>a+Math.pow(b-avg,2),0)/arr.length;
+      const sd=Math.sqrt(varc);
+      hasil.push({sekolah:nama, wilayah:obj.wilayah, avg, sd, n:arr.length});
+    }else{
+      hasil.push({sekolah:nama, wilayah:obj.wilayah, avg:0, sd:0, n:0});
+    }
+  });
+  return {rows:hasil, juris};
+}
+
+function render(){
+  const {rows, juris} = kumpulkanRata2();
+  const wrap=$("#hasilWrap"); wrap.innerHTML="";
+  if(!rows){ wrap.textContent="Belum ada penilaian juri."; return; }
+
+  // kelompok per wilayah & urut
+  const map={};
+  rows.forEach(r=>{ (map[r.wilayah] ||= []).push(r); });
+  const wilayahs = Object.keys(map).sort();
+
+  wilayahs.forEach(w=>{
+    const list = map[w].sort((a,b)=> b.avg - a.avg); // desc
+    const box=document.createElement("div");
+    box.innerHTML=`<h3 class="text-lg font-semibold mb-2">Wilayah: ${w}</h3>`;
+    const tbl=document.createElement("table");
+    tbl.className="min-w-full text-sm border border-slate-200 rounded-lg overflow-hidden";
+    tbl.innerHTML=`<thead class="bg-slate-50"><tr>
+      <th class="px-3 py-2 text-left">#</th>
+      <th class="px-3 py-2 text-left">Sekolah</th>
+      <th class="px-3 py-2 text-left">Rata-rata</th>
+      <th class="px-3 py-2 text-left">SD</th>
+      <th class="px-3 py-2 text-left">#Juri</th>
+    </tr></thead><tbody class="[&_tr:nth-child(even)]:bg-slate-50"></tbody>`;
+    const body=tbl.querySelector("tbody");
+    list.forEach((r,i)=>{
+      const tr=document.createElement("tr");
+      const warn = r.sd>5 ? ' class="bg-amber-50"' : '';
+      tr.innerHTML=`<td${warn} class="px-3 py-2">${i+1}</td>
+        <td${warn} class="px-3 py-2">${r.sekolah}</td>
+        <td${warn} class="px-3 py-2 font-medium">${r.avg.toFixed(2)}</td>
+        <td${warn} class="px-3 py-2">${r.sd.toFixed(2)}</td>
+        <td${warn} class="px-3 py-2">${r.n}</td>`;
+      body.appendChild(tr);
+    });
+    box.appendChild(tbl);
+    wrap.appendChild(box);
+  });
+
+  toast(`Ditampilkan: ${wilayahs.length} wilayah • ${juris.length} juri`);
+}
+
+/* Export CSV (opsional) */
+function exportCSV(){
+  const {rows} = kumpulkanRata2(); if(!rows) return;
+  const header = ["Wilayah","Sekolah","Rata-rata","SD","#Juri"];
+  const line = r=>[r.wilayah,r.sekolah,r.avg.toFixed(2),r.sd.toFixed(2),r.n].join(",");
+  const csv = [header.join(","), ...rows.sort((a,b)=>a.wilayah.localeCompare(b.wilayah)||b.avg-a.avg).map(line)].join("\n");
+  const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "rekap_per_wilayah.csv";
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
+$("#btnHitung").onclick=render;
+$("#btnExport").onclick=exportCSV;
+</script>
+</body>
+</html>
