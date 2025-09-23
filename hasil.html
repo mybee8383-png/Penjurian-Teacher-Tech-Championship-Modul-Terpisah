@@ -19,9 +19,11 @@
   <div id="toast" class="hidden rounded-lg px-4 py-3 mb-4 text-sm"></div>
 
   <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
-    <div class="flex gap-3 mb-4">
+    <div class="flex flex-wrap gap-3 mb-4">
       <button id="btnHitung" class="rounded-md bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2">Hitung & Tampilkan</button>
       <button id="btnExport" class="rounded-md border border-slate-300 hover:bg-slate-50 px-4 py-2">Export CSV</button>
+      <!-- ⬇️ Tombol reset semua data -->
+      <button id="btnResetAll" class="rounded-md border border-rose-300 text-rose-700 hover:bg-rose-50 px-4 py-2">Reset Semua Data</button>
     </div>
     <div id="hasilWrap" class="space-y-6"></div>
   </section>
@@ -41,7 +43,7 @@ function kumpulkanRata2(){
   const bySek = {}; // { "Sekolah A": {wilayah:"", nilai:[..]} }
   cfg.sekolahs.forEach(s=> bySek[s.nama]={wilayah:s.wilayah, nilai:[]});
   const juris = ambilSemuaJuri();
-  if(juris.length===0) return {bySek, juris};
+  if(juris.length===0) return {rows:[], juris};
 
   juris.forEach(j=>{
     const rec = JSON.parse(localStorage.getItem("TTC_scores_"+j)||"null");
@@ -72,7 +74,7 @@ function kumpulkanRata2(){
 function render(){
   const {rows, juris} = kumpulkanRata2();
   const wrap=$("#hasilWrap"); wrap.innerHTML="";
-  if(!rows){ wrap.textContent="Belum ada penilaian juri."; return; }
+  if(rows.length===0){ wrap.textContent="Belum ada penilaian juri."; return; }
 
   // kelompok per wilayah & urut
   const map={};
@@ -121,8 +123,16 @@ function exportCSV(){
   document.body.appendChild(a); a.click(); a.remove();
 }
 
+/* ⬇️ Reset semua data (config + seluruh nilai juri) */
+function resetAll(){
+  if(!confirm("Hapus SEMUA data (konfigurasi + seluruh nilai juri)?")) return;
+  Object.keys(localStorage).forEach(k=>{ if(k.startsWith("TTC_")) localStorage.removeItem(k); });
+  location.href = "data.html"; // setelah reset, arahkan ke modul data
+}
+
 $("#btnHitung").onclick=render;
 $("#btnExport").onclick=exportCSV;
+$("#btnResetAll").onclick=resetAll;
 </script>
 </body>
 </html>
