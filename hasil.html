@@ -6,14 +6,11 @@
 <title>TTC • Modul Hasil</title>
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-50 text-slate-800">
+<body class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-blue-100 text-slate-800">
 <div class="max-w-6xl mx-auto p-6">
-  <header class="mb-6">
+  <header class="mb-6 flex items-center gap-3">
+    <img src="logo-ttc.png" alt="Teacher Tech Championship" class="h-12 w-auto" />
     <h1 class="text-2xl md:text-3xl font-bold">Teacher Tech Championship — Modul Hasil</h1>
-    <nav class="mt-2 text-sm">
-      <a href="data.html" class="text-indigo-600 hover:underline mr-4">← Modul Data</a>
-      <a href="juri.html" class="text-indigo-600 hover:underline">← Modul Juri</a>
-    </nav>
   </header>
 
   <div id="toast" class="hidden rounded-lg px-4 py-3 mb-4 text-sm"></div>
@@ -22,10 +19,14 @@
     <div class="flex flex-wrap gap-3 mb-4">
       <button id="btnHitung" class="rounded-md bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2">Hitung & Tampilkan</button>
       <button id="btnExport" class="rounded-md border border-slate-300 hover:bg-slate-50 px-4 py-2">Export CSV</button>
-      <!-- ⬇️ Tombol reset semua data -->
-      <button id="btnResetAll" class="rounded-md border border-rose-300 text-rose-700 hover:bg-rose-50 px-4 py-2">Reset Semua Data</button>
     </div>
+    <div class="text-xs text-slate-600 mb-3">Catatan: baris berwarna menandakan <em>standar deviasi</em> &gt; 5% (perlu diskusi antar juri).</div>
     <div id="hasilWrap" class="space-y-6"></div>
+
+    <!-- Tombol ke Modul Juri di bawah -->
+    <div class="mt-8 flex justify-center">
+      <a href="juri.html" class="rounded-md border border-slate-300 bg-white hover:bg-slate-50 px-5 py-3">Ke Modul Juri</a>
+    </div>
   </section>
 </div>
 
@@ -36,7 +37,7 @@ const cfg = JSON.parse(localStorage.getItem("TTC_config")||"null");
 if(!cfg){ alert("Konfigurasi belum ada. Buka modul data dulu."); location.href="data.html"; }
 
 function ambilSemuaJuri(){
-  const arr=[]; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k.startsWith("TTC_scores_")) arr.push(k.slice("TTC_scores_".length)); }
+  const arr=[]; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k.startsWith("TTC_scores_")) arr.push(k.slice(11)); }
   return arr;
 }
 function kumpulkanRata2(){
@@ -76,13 +77,13 @@ function render(){
   const wrap=$("#hasilWrap"); wrap.innerHTML="";
   if(rows.length===0){ wrap.textContent="Belum ada penilaian juri."; return; }
 
-  // kelompok per wilayah & urut
+  // kelompok per wilayah & urut desc oleh rata-rata
   const map={};
   rows.forEach(r=>{ (map[r.wilayah] ||= []).push(r); });
   const wilayahs = Object.keys(map).sort();
 
   wilayahs.forEach(w=>{
-    const list = map[w].sort((a,b)=> b.avg - a.avg); // desc
+    const list = map[w].sort((a,b)=> b.avg - a.avg); // urut nilai tertinggi
     const box=document.createElement("div");
     box.innerHTML=`<h3 class="text-lg font-semibold mb-2">Wilayah: ${w}</h3>`;
     const tbl=document.createElement("table");
@@ -91,18 +92,22 @@ function render(){
       <th class="px-3 py-2 text-left">#</th>
       <th class="px-3 py-2 text-left">Sekolah</th>
       <th class="px-3 py-2 text-left">Rata-rata</th>
-      <th class="px-3 py-2 text-left">SD</th>
+      <th class="px-3 py-2 text-left">Standar Deviasi</th>
       <th class="px-3 py-2 text-left">#Juri</th>
+      <th class="px-3 py-2 text-left">Catatan</th>
     </tr></thead><tbody class="[&_tr:nth-child(even)]:bg-slate-50"></tbody>`;
     const body=tbl.querySelector("tbody");
     list.forEach((r,i)=>{
+      const needWarn = r.sd > 5; // 5% dari skala 0-100
       const tr=document.createElement("tr");
-      const warn = r.sd>5 ? ' class="bg-amber-50"' : '';
-      tr.innerHTML=`<td${warn} class="px-3 py-2">${i+1}</td>
-        <td${warn} class="px-3 py-2">${r.sekolah}</td>
-        <td${warn} class="px-3 py-2 font-medium">${r.avg.toFixed(2)}</td>
-        <td${warn} class="px-3 py-2">${r.sd.toFixed(2)}</td>
-        <td${warn} class="px-3 py-2">${r.n}</td>`;
+      const warnText = needWarn ? "⚠️ Standar deviasi > 5% — diskusikan lagi antar juri." : "";
+      tr.innerHTML=`<td class="px-3 py-2">${i+1}</td>
+        <td class="px-3 py-2">${r.sekolah}</td>
+        <td class="px-3 py-2 font-medium">${r.avg.toFixed(2)}</td>
+        <td class="px-3 py-2">${r.sd.toFixed(2)}</td>
+        <td class="px-3 py-2">${r.n}</td>
+        <td class="px-3 py-2 ${needWarn?'text-amber-700':''}">${warnText}</td>`;
+      if(needWarn) tr.classList.add("bg-amber-50");
       body.appendChild(tr);
     });
     box.appendChild(tbl);
@@ -112,27 +117,22 @@ function render(){
   toast(`Ditampilkan: ${wilayahs.length} wilayah • ${juris.length} juri`);
 }
 
-/* Export CSV (opsional) */
+/* Export CSV */
 function exportCSV(){
   const {rows} = kumpulkanRata2(); if(!rows) return;
-  const header = ["Wilayah","Sekolah","Rata-rata","SD","#Juri"];
-  const line = r=>[r.wilayah,r.sekolah,r.avg.toFixed(2),r.sd.toFixed(2),r.n].join(",");
+  const header = ["Wilayah","Sekolah","Rata-rata","Standar Deviasi","#Juri","Catatan"];
+  const line = r=>{
+    const warn = (r.sd>5) ? "SD>5% - diskusikan" : "";
+    return [r.wilayah,r.sekolah,r.avg.toFixed(2),r.sd.toFixed(2),r.n,warn].join(",");
+  };
   const csv = [header.join(","), ...rows.sort((a,b)=>a.wilayah.localeCompare(b.wilayah)||b.avg-a.avg).map(line)].join("\n");
   const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
   const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "rekap_per_wilayah.csv";
   document.body.appendChild(a); a.click(); a.remove();
 }
 
-/* ⬇️ Reset semua data (config + seluruh nilai juri) */
-function resetAll(){
-  if(!confirm("Hapus SEMUA data (konfigurasi + seluruh nilai juri)?")) return;
-  Object.keys(localStorage).forEach(k=>{ if(k.startsWith("TTC_")) localStorage.removeItem(k); });
-  location.href = "data.html"; // setelah reset, arahkan ke modul data
-}
-
 $("#btnHitung").onclick=render;
 $("#btnExport").onclick=exportCSV;
-$("#btnResetAll").onclick=resetAll;
 </script>
 </body>
 </html>
