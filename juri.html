@@ -6,14 +6,11 @@
 <title>TTC • Modul Juri</title>
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-50 text-slate-800">
+<body class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-blue-100 text-slate-800">
 <div class="max-w-6xl mx-auto p-6">
-  <header class="mb-6">
+  <header class="mb-6 flex items-center gap-3">
+    <img src="logo-ttc.png" alt="Teacher Tech Championship" class="h-12 w-auto" />
     <h1 class="text-2xl md:text-3xl font-bold">Teacher Tech Championship — Modul Juri</h1>
-    <nav class="mt-2 text-sm">
-      <a href="data.html" class="text-indigo-600 hover:underline mr-4">← Modul Data</a>
-      <a href="hasil.html" class="text-indigo-600 hover:underline">→ Modul Hasil</a>
-    </nav>
   </header>
 
   <div id="toast" class="hidden rounded-lg px-4 py-3 mb-4 text-sm"></div>
@@ -24,7 +21,7 @@
     <div class="flex flex-wrap items-end gap-3">
       <label class="block">
         <span class="text-sm">Nama Juri</span>
-        <select id="selectJuri" class="mt-1 w-64 rounded-md border-slate-300 focus:border-indigo-500 focus:ring-indigo-500"></select>
+        <select id="selectJuri" class="mt-1 w-64 rounded-md border-slate-300 bg-sky-50 focus:border-indigo-500 focus:ring-indigo-500"></select>
       </label>
       <button id="btnMulai" type="button" class="rounded-md bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2">Mulai Menilai</button>
       <button id="btnHapusSaya" type="button" class="rounded-md border border-slate-300 hover:bg-slate-50 px-4 py-2">Hapus Nilai Juri Ini</button>
@@ -43,11 +40,9 @@
     <h2 class="text-lg font-semibold mb-4">B. Kertas Penjurian</h2>
     <div id="formPenjurian" class="overflow-x-auto mb-4"></div>
 
-    <!-- Aksi bawah form -->
     <div class="flex flex-wrap items-center gap-3">
       <span class="text-xs text-slate-500">Perubahan disimpan otomatis.</span>
       <div class="ml-auto"></div>
-      <!-- Tombol SELESAI -->
       <button id="btnSelesai" type="button" class="rounded-md bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2">
         Selesai &amp; Kembali ke Beranda
       </button>
@@ -62,30 +57,29 @@
 </div>
 
 <script>
-/* ========= Helpers ========= */
 const $=s=>document.querySelector(s);
 const toast=(m,ok=true)=>{const t=$("#toast");t.classList.remove("hidden");t.className="rounded-lg px-4 py-3 mb-4 text-sm "+(ok?"bg-emerald-50 border border-emerald-200 text-emerald-900":"bg-rose-50 border border-rose-200 text-rose-900");t.textContent=m;setTimeout(()=>t.classList.add("hidden"),2000);}
 
 const cfg = JSON.parse(localStorage.getItem("TTC_config")||"null");
-if(!cfg){ alert("Konfigurasi belum dibuat. Buka modul data dulu."); location.href="data.html"; }
+if(!cfg){ alert("Konfigurasi belum dibuat. Kembali ke beranda untuk memulai."); window.location.replace('./'); }
 
 const key = j=>`TTC_scores_${j}`;
 const kategori=v=>(v>=90?'Istimewa':v>=80?'Baik Sekali':v>=70?'Baik':v>=60?'Cukup':v>=50?'Kurang':'Kurang Sekali');
 let currentJudge = null;
 
-/* ========= Dropdown juri ========= */
+/* Dropdown juri */
 (function(){
   const sel=$("#selectJuri");
-  sel.innerHTML = cfg.judges.map(j=>`<option value="${j}">${j}</option>`).join("");
+  sel.innerHTML = (cfg.judges||[]).map(j=>`<option value="${j}">${j}</option>`).join("");
 })();
 
-/* ========= Mulai menilai ========= */
+/* Mulai menilai */
 $("#btnMulai").onclick=()=>{
   const nama=$("#selectJuri").value;
+  if(!nama){ toast("Nama juri tidak tersedia.", false); return; }
   currentJudge = nama;
   $("#labelJuri").textContent = nama;
 
-  // Tabel penjurian
   const box=$("#formPenjurian"); box.innerHTML="";
   const table=document.createElement("table");
   table.className="min-w-full text-sm border border-slate-200 rounded-lg overflow-hidden";
@@ -108,7 +102,7 @@ $("#btnMulai").onclick=()=>{
       const td=document.createElement("td"); td.className="px-3 py-2";
       const inp=document.createElement("input");
       inp.type="number"; inp.min="0"; inp.max="100"; inp.step="1"; inp.id=`n_${idxS}_${idxA}`;
-      inp.className="w-24 rounded-md border-slate-300 focus:border-indigo-500 focus:ring-indigo-500";
+      inp.className="w-24 rounded-md border-slate-300 bg-sky-50 focus:border-indigo-500 focus:ring-indigo-500";
       const pred=document.createElement("div"); pred.id=`p_${idxS}_${idxA}`; pred.className="text-[11px] text-slate-500 mt-1";
 
       if(draft){ const rec=draft.nilai.find(r=>r.sekolah===s.nama); if(rec && rec.nilai[a.nama]!=null){ inp.value=rec.nilai[a.nama]; pred.textContent=kategori(+inp.value); } }
@@ -131,7 +125,6 @@ $("#btnMulai").onclick=()=>{
   toast(`Form untuk ${nama} siap`);
 };
 
-/* ========= Hitung & simpan ========= */
 function hitungTotalBaris(idxS){
   let tot=0; cfg.aspek.forEach((a,idxA)=>{ const v=parseFloat(($("#n_"+idxS+"_"+idxA)?.value)||"0"); tot+=v*(a.bobot/100); });
   $("#t_"+idxS).textContent=tot.toFixed(2);
@@ -147,7 +140,6 @@ function autoSave(nama){
   refreshRekap(nama);
 }
 
-/* ========= Rekap ========= */
 function refreshRekap(nama){
   const box=$("#rekapTabel"); box.innerHTML="";
   const rec=JSON.parse(localStorage.getItem(key(nama))||"null"); if(!rec){ box.textContent="Belum ada nilai."; return; }
@@ -162,7 +154,6 @@ function refreshRekap(nama){
   });
 }
 
-/* ========= Hapus nilai juri ini ========= */
 $("#btnHapusSaya").onclick=()=>{
   const nama=$("#selectJuri").value;
   if(!confirm(`Hapus semua nilai milik ${nama}?`)) return;
@@ -173,23 +164,17 @@ $("#btnHapusSaya").onclick=()=>{
   toast("Nilai juri dihapus");
 };
 
-/* ========= Reset semua data ========= */
 $("#btnResetAll").onclick=()=>{
   if(!confirm("Hapus SEMUA data (konfigurasi + seluruh nilai juri)?")) return;
   Object.keys(localStorage).forEach(k=>{ if(k.startsWith("TTC_")) localStorage.removeItem(k); });
-  location.href = "data.html"; // setelah reset, arahkan ke modul data
+  window.location.replace('./');
 };
 
-/* ========= Tombol SELESAI ========= */
 $("#btnSelesai").onclick=()=>{
-  if(!currentJudge){
-    toast("Silakan pilih juri dan klik Mulai terlebih dahulu.", false);
-    return;
-  }
-  // Simpan dulu nilai terbaru, kemudian kembali ke beranda
+  if(!currentJudge){ toast("Silakan pilih juri dan klik Mulai terlebih dahulu.", false); return; }
   autoSave(currentJudge);
   toast("Nilai tersimpan ✓");
-  setTimeout(()=>{ window.location.replace('./'); }, 300); // './' aman untuk root atau /docs
+  setTimeout(()=>{ window.location.replace('./'); }, 300);
 };
 </script>
 </body>
