@@ -5,20 +5,40 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Teacher Tech Championship • Beranda</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* === THEME (ubah HEX di sini kalau perlu) === */
+    /* Brand blues */
+    /* Header text / deep blue */
+    :root { --kv-primary:#012C78; }    /* pekat */
+    :root { --kv-deep:#033686; }       /* deep */
+    :root { --kv-bright:#0172EA; }     /* bright */
+    :root { --kv-accent:#49A4F3; }     /* light accent */
+    :root { --kv-bg:#F3F7FF; }         /* page bg */
+
+    /* KV yellow for highlights (clover tone) */
+    :root { --kv-yellow:#FFD24A; }     /* badge, highlight */
+    :root { --kv-yellow-50:#FFF6D5; }  /* light background */
+    :root { --kv-yellow-200:#FFE69A; } /* border */
+    :root { --kv-yellow-800:#7A5F00; } /* readable text over light yellow */
+  </style>
 </head>
-<body class="bg-[#F3F7FF] text-slate-800">
+<body class="bg-[var(--kv-bg)] text-slate-800">
   <!-- Hero -->
   <div class="relative overflow-hidden">
-    <!-- Gradasi biru: #033686 → #0172EA → #49A4F3 -->
-    <div class="absolute inset-0 bg-gradient-to-br from-[#033686]/90 via-[#0172EA]/70 to-[#49A4F3]/60"></div>
+    <!-- Gradasi ringan (biar teks header #012C78 tetap kebaca) -->
+    <div class="absolute inset-0 bg-gradient-to-br
+                from-[color:rgb(1,114,234)/0.12]
+                via-[color:rgb(73,164,243)/0.10]
+                to-[color:rgb(1,44,120)/0.10]"></div>
 
     <!-- Header -->
     <header class="relative max-w-6xl mx-auto px-6 py-6 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <img src="assets/logo-ttc.png" alt="Logo Teacher Tech Championship" class="h-10 md:h-12">
-        <h1 class="text-xl md:text-2xl font-bold text-white drop-shadow">Teacher Tech Championship</h1>
+        <!-- Ganti src jika nama/logo beda; simpan di /assets -->
+        <img src="assets/logo-ttc.png" alt="Logo Teacher Tech Championship" class="h-10 md:h-12" decoding="async">
+        <h1 class="text-xl md:text-2xl font-bold text-[var(--kv-primary)]">Teacher Tech Championship</h1>
       </div>
-      <a href="https://github.com" class="hidden md:inline text-sm text-white/80 hover:text-white">GitHub Pages</a>
+      <a href="https://github.com" class="hidden md:inline text-sm text-[color:var(--kv-primary)]/70 hover:text-[var(--kv-primary)]">GitHub Pages</a>
     </header>
 
     <!-- Hero Section -->
@@ -27,7 +47,9 @@
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
           <div>
             <!-- Status pill; di-update JS -->
-            <div id="pillStatus" class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium mb-3 bg-[#E7F1FF] text-[#033686]">
+            <div id="pillStatus"
+                 class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium mb-3
+                        bg-[color:var(--kv-accent)]/10 text-[var(--kv-deep)]">
               <span id="dotStatus" class="w-2 h-2 rounded-full bg-rose-500"></span>
               <span id="labelStatus">Konfigurasi belum dibuat</span>
             </div>
@@ -36,7 +58,10 @@
 
             <div class="mt-5 flex flex-wrap gap-3">
               <button id="btnResetAll" class="inline-flex items-center gap-2 rounded-md border border-rose-300 text-rose-700 hover:bg-rose-50 px-4 py-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m-7 0h8l-1-2H10l-1 2z"/></svg>
+                <!-- icon trash -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m-7 0h8l-1-2H10l-1 2z"/>
+                </svg>
                 Reset Semua Data
               </button>
             </div>
@@ -70,7 +95,7 @@
                 <span id="labelProgress">0%</span>
               </div>
               <div class="h-2 w-full rounded-full bg-slate-200 overflow-hidden">
-                <div id="barProgress" class="h-full rounded-full bg-[#0172EA]" style="width:0%"></div>
+                <div id="barProgress" class="h-full rounded-full bg-[var(--kv-bright)]" style="width:0%"></div>
               </div>
             </div>
 
@@ -87,10 +112,11 @@
       <a href="data.html" class="group rounded-2xl bg-white border border-slate-200 p-6 shadow-sm hover:shadow-md transition">
         <div class="flex items-center justify-between">
           <h3 class="text-lg font-semibold">Modul Data</h3>
-          <span class="rounded-full text-xs px-2 py-1 border bg-[#E7F1FF] text-[#033686] border-[#C8DDFB]">Admin</span>
+          <span class="rounded-full text-xs px-2 py-1 border
+                       bg-[color:var(--kv-accent)]/10 text-[var(--kv-deep)] border-[color:var(--kv-accent)]/30">Admin</span>
         </div>
         <p class="text-slate-600 mt-2">Masukkan sekolah & wilayah, tentukan aspek dan bobot (total 100%), serta daftar nama juri.</p>
-        <div class="mt-4 flex items-center gap-2 text-[#0172EA] group-hover:gap-3">
+        <div class="mt-4 flex items-center gap-2 text-[var(--kv-bright)] group-hover:gap-3">
           <span class="text-sm font-medium">Buka</span>
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.5" d="M9 5l7 7-7 7"/></svg>
         </div>
@@ -113,10 +139,12 @@
       <a href="hasil.html" class="group rounded-2xl bg-white border border-slate-200 p-6 shadow-sm hover:shadow-md transition">
         <div class="flex items-center justify-between">
           <h3 class="text-lg font-semibold">Modul Hasil</h3>
-          <span class="rounded-full bg-amber-50 text-amber-700 text-xs px-2 py-1 border border-amber-100">Rekap</span>
+          <!-- Aksen kuning KV -->
+          <span class="rounded-full text-xs px-2 py-1 border
+                       bg-[var(--kv-yellow-50)] text-[var(--kv-yellow-800)] border-[var(--kv-yellow-200)]">Rekap</span>
         </div>
         <p class="text-slate-600 mt-2">Gabungkan nilai seluruh juri, lihat peringkat tiap wilayah (rata-rata), SD & ekspor CSV.</p>
-        <div class="mt-4 flex items-center gap-2 text-amber-700 group-hover:gap-3">
+        <div class="mt-4 flex items-center gap-2 text-[var(--kv-primary)] group-hover:gap-3">
           <span class="text-sm font-medium">Buka</span>
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="1.5" d="M9 5l7 7-7 7"/></svg>
         </div>
@@ -163,7 +191,8 @@
       $('#labelStatus').textContent = hasCfg ? 'Konfigurasi tersimpan' : 'Konfigurasi belum dibuat';
       $('#dotStatus').className = 'w-2 h-2 rounded-full ' + (hasCfg ? 'bg-emerald-500' : 'bg-rose-500');
       const pill = document.getElementById('pillStatus');
-      pill.className = 'inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium mb-3 ' + (hasCfg ? 'bg-[#E8F7EF] text-emerald-700' : 'bg-rose-50 text-rose-700');
+      pill.className = 'inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium mb-3 ' +
+        (hasCfg ? 'bg-[#E8F7EF] text-emerald-700' : 'bg-rose-50 text-rose-700');
 
       // Stats
       const nSek = cfg?.sekolahs?.length ?? 0;
