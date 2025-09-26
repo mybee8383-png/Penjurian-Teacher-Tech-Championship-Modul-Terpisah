@@ -7,25 +7,23 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     /* === THEME (ubah HEX di sini kalau perlu) === */
-    /* Brand blues */
-    /* Header text / deep blue */
-    :root { --kv-primary:#012C78; }    /* pekat */
-    :root { --kv-deep:#033686; }       /* deep */
-    :root { --kv-bright:#0172EA; }     /* bright */
-    :root { --kv-accent:#49A4F3; }     /* light accent */
-    :root { --kv-bg:#F3F7FF; }         /* page bg */
-
-    /* KV yellow for highlights (clover tone) */
-    :root { --kv-yellow:#FFD24A; }     /* badge, highlight */
-    :root { --kv-yellow-50:#FFF6D5; }  /* light background */
-    :root { --kv-yellow-200:#FFE69A; } /* border */
-    :root { --kv-yellow-800:#7A5F00; } /* readable text over light yellow */
+    :root {
+      --kv-primary:#012C78;   /* header text deep blue */
+      --kv-deep:#033686;      /* deep */
+      --kv-bright:#0172EA;    /* bright */
+      --kv-accent:#49A4F3;    /* light accent */
+      --kv-bg:#F3F7FF;        /* page bg */
+      --kv-yellow:#FFD24A;    /* badge highlight */
+      --kv-yellow-50:#FFF6D5;
+      --kv-yellow-200:#FFE69A;
+      --kv-yellow-800:#7A5F00;
+    }
   </style>
 </head>
 <body class="bg-[var(--kv-bg)] text-slate-800">
   <!-- Hero -->
   <div class="relative overflow-hidden">
-    <!-- Gradasi ringan (biar teks header #012C78 tetap kebaca) -->
+    <!-- Gradasi biru ringan -->
     <div class="absolute inset-0 bg-gradient-to-br
                 from-[color:rgb(1,114,234)/0.12]
                 via-[color:rgb(73,164,243)/0.10]
@@ -34,16 +32,26 @@
     <!-- Header -->
     <header class="relative max-w-6xl mx-auto px-6 py-6 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <!-- Ganti src jika nama/logo beda; simpan di /assets -->
-        <img src="assets/logo_ttc.png" alt="Logo Teacher Tech Championship" class="h-10 md:h-12" decoding="async">
+        <!-- ====== LOGO HEADER (dibesarkan) ====== -->
+        <img src="assets/logo-ttc.png" alt="Logo Teacher Tech Championship"
+             class="h-14 md:h-20 w-auto object-contain" decoding="async" fetchpriority="high">
         <h1 class="text-xl md:text-2xl font-bold text-[var(--kv-primary)]">Teacher Tech Championship</h1>
       </div>
-      <a href="https://github.com" class="hidden md:inline text-sm text-[color:var(--kv-primary)]/70 hover:text-[var(--kv-primary)]">GitHub Pages</a>
+      <a href="https://github.com"
+         class="hidden md:inline text-sm text-[var(--kv-primary)] opacity-80 hover:opacity-100 transition">
+         GitHub Pages
+      </a>
     </header>
 
     <!-- Hero Section -->
     <section class="relative max-w-6xl mx-auto px-6 pb-6">
-      <div class="rounded-2xl bg-white/85 backdrop-blur border border-white/60 shadow-sm p-6 md:p-8">
+      <!-- KARTU BERANDA + WATERMARK -->
+      <div class="relative overflow-hidden rounded-2xl bg-white/85 backdrop-blur border border-white/60 shadow-sm p-6 md:p-8">
+        <!-- ====== WATERMARK LOGO (latar belakang modul) ====== -->
+        <img src="assets/logo-ttc.png" alt="" aria-hidden="true"
+             class="pointer-events-none select-none absolute -right-6 -top-6 md:right-2 md:-top-8
+                    w-[180px] md:w-[280px] lg:w-[340px] opacity-10 mix-blend-multiply">
+
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
           <div>
             <!-- Status pill; di-update JS -->
@@ -59,9 +67,7 @@
             <div class="mt-5 flex flex-wrap gap-3">
               <button id="btnResetAll" class="inline-flex items-center gap-2 rounded-md border border-rose-300 text-rose-700 hover:bg-rose-50 px-4 py-2">
                 <!-- icon trash -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m-7 0h8l-1-2H10l-1 2z"/>
-                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m-7 0h8l-1-2H10l-1 2z"/></svg>
                 Reset Semua Data
               </button>
             </div>
